@@ -61,16 +61,16 @@ describe('OwlDateTimeComponent', () => {
         entryComponents: Type<any>[] = []
     ): ComponentFixture<any> {
         TestBed.configureTestingModule({
-            imports: [
-                FormsModule,
-                OwlDateTimeModule,
-                NoopAnimationsModule,
-                ReactiveFormsModule,
-                ...imports
-            ],
-            providers,
-            declarations: [component, ...entryComponents]
-        });
+    imports: [
+        FormsModule,
+        OwlDateTimeModule,
+        NoopAnimationsModule,
+        ReactiveFormsModule,
+        ...imports,
+        component, ...entryComponents
+    ],
+    providers
+});
 
         TestBed.overrideModule(BrowserDynamicTestingModule, {
 

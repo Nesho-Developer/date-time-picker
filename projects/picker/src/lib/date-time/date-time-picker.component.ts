@@ -2,22 +2,7 @@
  * date-time-picker.component
  */
 
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  ComponentRef,
-  EventEmitter,
-  Inject,
-  InjectionToken,
-  Input,
-  NgZone,
-  OnDestroy,
-  OnInit,
-  Optional,
-  Output,
-  ViewContainerRef,
-} from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentRef, EventEmitter, InjectionToken, Input, NgZone, OnDestroy, OnInit, Output, ViewContainerRef, inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { ComponentPortal } from '@angular/cdk/portal';
 import {
@@ -73,12 +58,22 @@ export const OWL_DTPICKER_SCROLL_STRATEGY_PROVIDER = {
     exportAs: 'owlDateTime',
     templateUrl: './date-time-picker.component.html',
     styleUrls: ['./date-time-picker.component.scss'],
-    standalone: false,
     changeDetection: ChangeDetectionStrategy.OnPush,
     preserveWhitespaces: false
 })
 export class OwlDateTimeComponent<T> extends OwlDateTime<T>
     implements OnInit, OnDestroy {
+    overlay = inject(Overlay);
+    private viewContainerRef = inject(ViewContainerRef);
+    private dialogService = inject(OwlDialogService);
+    private ngZone = inject(NgZone);
+    protected changeDetector = inject(ChangeDetectorRef);
+    protected dateTimeAdapter: DateTimeAdapter<T> =inject<DateTimeAdapter<T>>(DateTimeAdapter, { optional: true })!;
+    protected dateTimeFormats: OwlDateTimeFormats=inject<OwlDateTimeFormats>(OWL_DATE_TIME_FORMATS, { optional: true })!;
+
+
+    private document = inject(DOCUMENT, { optional: true })!;
+
     /** Custom class for the picker backdrop. */
     @Input()
     public backdropClass: string | string[] = [];
@@ -334,26 +329,7 @@ export class OwlDateTimeComponent<T> extends OwlDateTime<T>
         return this._dtInput.isInRangeMode;
     }
 
-    private readonly defaultScrollStrategy: () => ScrollStrategy;
-
-    constructor(
-        public overlay: Overlay,
-        private viewContainerRef: ViewContainerRef,
-        private dialogService: OwlDialogService,
-        private ngZone: NgZone,
-        protected changeDetector: ChangeDetectorRef,
-        @Optional() protected dateTimeAdapter: DateTimeAdapter<T>,
-        @Inject(OWL_DTPICKER_SCROLL_STRATEGY) defaultScrollStrategy: any,
-        @Optional()
-        @Inject(OWL_DATE_TIME_FORMATS)
-        protected dateTimeFormats: OwlDateTimeFormats,
-        @Optional()
-        @Inject(DOCUMENT)
-        private document: any
-    ) {
-        super(dateTimeAdapter, dateTimeFormats);
-        this.defaultScrollStrategy = defaultScrollStrategy;
-    }
+    private readonly defaultScrollStrategy= inject(OWL_DTPICKER_SCROLL_STRATEGY);
 
     public ngOnInit() {}
 
@@ -398,7 +374,7 @@ export class OwlDateTimeComponent<T> extends OwlDateTime<T>
         }
 
         if (this.document) {
-            this.focusedElementBeforeOpen = this.document.activeElement;
+            this.focusedElementBeforeOpen = this.document.activeElement as HTMLElement;
         }
 
         // reset the picker selected value

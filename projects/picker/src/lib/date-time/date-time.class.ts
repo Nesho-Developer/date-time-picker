@@ -1,7 +1,7 @@
 /**
  * date-time.class
  */
-import {EventEmitter, Inject, Input, Optional, Directive} from '@angular/core';
+import { EventEmitter, Input, Directive, inject } from '@angular/core';
 import {
     coerceBooleanProperty,
     coerceNumberProperty
@@ -30,6 +30,9 @@ export type DateViewType = DateView.MONTH | DateView.YEAR | DateView.MULTI_YEARS
 
 @Directive()
 export abstract class OwlDateTime<T> {
+    protected dateTimeAdapter = inject<DateTimeAdapter<T>>(DateTimeAdapter, { optional: true })!;
+    protected dateTimeFormats = inject<OwlDateTimeFormats>(OWL_DATE_TIME_FORMATS, { optional: true })!;
+
     /**
      * Whether to show the second's timer
      */
@@ -222,12 +225,7 @@ export abstract class OwlDateTime<T> {
         return false;
     }
 
-    protected constructor(
-        @Optional() protected dateTimeAdapter: DateTimeAdapter<T>,
-        @Optional()
-        @Inject(OWL_DATE_TIME_FORMATS)
-        protected dateTimeFormats: OwlDateTimeFormats
-    ) {
+    public constructor() {
         if (!this.dateTimeAdapter) {
             throw Error(
                 `OwlDateTimePicker: No provider found for DateTimeAdapter. You must import one of the following ` +

@@ -2,21 +2,11 @@
  * timer.component
  */
 
-import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    ElementRef,
-    EventEmitter,
-    Input,
-    NgZone,
-    OnInit,
-    Optional,
-    Output
-} from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, NgZone, OnInit, Output, inject } from '@angular/core';
 import { OwlDateTimeIntl } from './date-time-picker-intl.service';
 import { DateTimeAdapter } from './adapter/date-time-adapter.class';
 import { take } from 'rxjs/operators';
+import { OwlTimerBoxComponent } from './timer-box.component';
 
 @Component({
     exportAs: 'owlDateTimeTimer',
@@ -24,14 +14,20 @@ import { take } from 'rxjs/operators';
     templateUrl: './timer.component.html',
     styleUrls: ['./timer.component.scss'],
     preserveWhitespaces: false,
-    standalone: false,
     changeDetection: ChangeDetectionStrategy.OnPush,
     host: {
         '[class.owl-dt-timer]': 'owlDTTimerClass',
         '[attr.tabindex]': 'owlDTTimeTabIndex'
-    }
+    },
+    imports: [OwlTimerBoxComponent]
 })
 export class OwlTimerComponent<T> implements OnInit {
+    private ngZone = inject(NgZone);
+    private elmRef = inject(ElementRef);
+    private pickerIntl = inject(OwlDateTimeIntl);
+    private cdRef = inject(ChangeDetectorRef);
+    private dateTimeAdapter = inject<DateTimeAdapter<T>>(DateTimeAdapter, { optional: true })!;
+
     /** The current picker moment */
     private _pickerMoment: T;
     @Input()
@@ -180,14 +176,6 @@ export class OwlTimerComponent<T> implements OnInit {
     get owlDTTimeTabIndex(): number {
         return -1;
     }
-
-    constructor(
-        private ngZone: NgZone,
-        private elmRef: ElementRef,
-        private pickerIntl: OwlDateTimeIntl,
-        private cdRef: ChangeDetectorRef,
-        @Optional() private dateTimeAdapter: DateTimeAdapter<T>
-    ) {}
 
     public ngOnInit() {}
 

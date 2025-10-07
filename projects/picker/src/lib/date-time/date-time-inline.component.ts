@@ -2,18 +2,7 @@
  * date-time-inline.component
  */
 
-import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component, EventEmitter,
-    forwardRef,
-    Inject,
-    Input,
-    OnInit,
-    Optional,
-    Output,
-    ViewChild
-} from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, forwardRef, Input, OnInit, Output, ViewChild, inject } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import {
@@ -42,13 +31,18 @@ export const OWL_DATETIME_VALUE_ACCESSOR: any = {
     host: {
         '[class.owl-dt-inline]': 'owlDTInlineClass'
     },
-    standalone: false,
     changeDetection: ChangeDetectionStrategy.OnPush,
     preserveWhitespaces: false,
-    providers: [OWL_DATETIME_VALUE_ACCESSOR]
+    providers: [OWL_DATETIME_VALUE_ACCESSOR],
+    imports: [OwlDateTimeContainerComponent]
 })
 export class OwlDateTimeInlineComponent<T> extends OwlDateTime<T>
     implements OnInit, ControlValueAccessor {
+    protected changeDetector = inject(ChangeDetectorRef);
+    protected dateTimeAdapter: DateTimeAdapter<T>=inject<DateTimeAdapter<T>>(DateTimeAdapter, { optional: true })!;
+    protected dateTimeFormats: OwlDateTimeFormats = inject<OwlDateTimeFormats>(OWL_DATE_TIME_FORMATS, { optional: true })!;
+
+
     @ViewChild(OwlDateTimeContainerComponent, { static: true })
     container: OwlDateTimeContainerComponent<T>;
 
@@ -290,15 +284,6 @@ export class OwlDateTimeInlineComponent<T> extends OwlDateTime<T>
     private onModelChange: Function = () => { };
     private onModelTouched: Function = () => { };
 
-    constructor(
-        protected changeDetector: ChangeDetectorRef,
-        @Optional() protected dateTimeAdapter: DateTimeAdapter<T>,
-        @Optional()
-        @Inject(OWL_DATE_TIME_FORMATS)
-        protected dateTimeFormats: OwlDateTimeFormats
-    ) {
-        super(dateTimeAdapter, dateTimeFormats);
-    }
 
     public ngOnInit() {
         this.container.picker = this;

@@ -24,20 +24,7 @@ import { OwlDialogModule } from '../dialog/dialog.module';
 import { optionsProviders } from './options-provider';
 
 @NgModule({
-    imports: [CommonModule, OverlayModule, OwlDialogModule, A11yModule],
-    exports: [
-        OwlCalendarComponent,
-        OwlTimerComponent,
-        OwlDateTimeTriggerDirective,
-        OwlDateTimeInputDirective,
-        OwlDateTimeComponent,
-        OwlDateTimeInlineComponent,
-        OwlMultiYearViewComponent,
-        OwlYearViewComponent,
-        OwlMonthViewComponent,
-    ],
-    declarations: [
-        OwlDateTimeTriggerDirective,
+    imports: [CommonModule, OverlayModule, OwlDialogModule, A11yModule, OwlDateTimeTriggerDirective,
         OwlDateTimeInputDirective,
         OwlDateTimeComponent,
         OwlDateTimeContainerComponent,
@@ -49,8 +36,7 @@ import { optionsProviders } from './options-provider';
         OwlCalendarComponent,
         OwlCalendarBodyComponent,
         NumberFixedLenPipe,
-        OwlDateTimeInlineComponent,
-    ],
+        OwlDateTimeInlineComponent],
     providers: [
         OwlDateTimeIntl,
         OWL_DTPICKER_SCROLL_STRATEGY_PROVIDER,

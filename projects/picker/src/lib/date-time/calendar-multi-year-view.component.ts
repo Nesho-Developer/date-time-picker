@@ -2,18 +2,7 @@
  * calendar-multi-year-view.component
  */
 
-import {
-    AfterContentInit,
-    ChangeDetectionStrategy, ChangeDetectorRef,
-    Component,
-    EventEmitter,
-    Inject,
-    Input,
-    OnInit,
-    Optional,
-    Output,
-    ViewChild
-} from '@angular/core';
+import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild, inject } from '@angular/core';
 import { DateTimeAdapter } from './adapter/date-time-adapter.class';
 import { CalendarCell, OwlCalendarBodyComponent } from './calendar-body.component';
 import { SelectMode } from './date-time.class';
@@ -39,12 +28,17 @@ import { OptionsTokens, Options } from './options-provider';
         '[class.owl-dt-calendar-view]': 'owlDTCalendarView',
         '[class.owl-dt-calendar-multi-year-view]': 'owlDTCalendarMultiYearView'
     },
-    standalone: false,
     preserveWhitespaces: false,
     changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [OwlCalendarBodyComponent],
 })
 
 export class OwlMultiYearViewComponent<T> implements OnInit, AfterContentInit {
+    private cdRef = inject(ChangeDetectorRef);
+    private pickerIntl = inject(OwlDateTimeIntl);
+    private dateTimeAdapter = inject<DateTimeAdapter<T>>(DateTimeAdapter, { optional: true })!;
+    private options = inject(OptionsTokens.multiYear);
+
 
     /**
      * The select mode of the picker;
@@ -228,12 +222,6 @@ export class OwlMultiYearViewComponent<T> implements OnInit, AfterContentInit {
 
     get owlDTCalendarMultiYearView(): boolean {
         return true;
-    }
-
-    constructor( private cdRef: ChangeDetectorRef,
-                 private pickerIntl: OwlDateTimeIntl,
-                 @Optional() private dateTimeAdapter: DateTimeAdapter<T>,
-                 @Inject(OptionsTokens.multiYear) private options: any) {
     }
 
     public ngOnInit() {

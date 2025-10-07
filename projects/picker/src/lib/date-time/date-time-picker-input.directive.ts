@@ -2,20 +2,7 @@
  * date-time-picker-input.directive
  */
 
-import {
-    AfterContentInit,
-    Directive,
-    ElementRef,
-    EventEmitter,
-    forwardRef,
-    Inject,
-    Input,
-    OnDestroy,
-    OnInit,
-    Optional,
-    Output,
-    Renderer2
-} from '@angular/core';
+import { AfterContentInit, Directive, ElementRef, EventEmitter, forwardRef, Input, OnDestroy, OnInit, Output, Renderer2, inject } from '@angular/core';
 import {
     AbstractControl,
     ControlValueAccessor,
@@ -52,7 +39,6 @@ export const OWL_DATETIME_VALIDATORS: any = {
 @Directive({
     selector: 'input[owlDateTime]',
     exportAs: 'owlDateTimeInput',
-    standalone: false,
     host: {
         '(keydown)': 'handleKeydownOnHost($event)',
         '(blur)': 'handleBlurOnHost($event)',
@@ -76,6 +62,11 @@ export class OwlDateTimeInputDirective<T>
         OnDestroy,
         ControlValueAccessor,
         Validator {
+    private elmRef = inject(ElementRef);
+    private renderer = inject(Renderer2);
+    private dateTimeAdapter = inject<DateTimeAdapter<T>>(DateTimeAdapter, { optional: true })!;
+    private dateTimeFormats = inject<OwlDateTimeFormats>(OWL_DATE_TIME_FORMATS, { optional: true })!;
+
     static ngAcceptInputType_disabled: boolean|'';
 
      /**
@@ -455,13 +446,7 @@ export class OwlDateTimeInputDirective<T>
         return this.disabled;
     }
 
-    constructor(
-        private elmRef: ElementRef,
-        private renderer: Renderer2,
-        @Optional()
-        private dateTimeAdapter: DateTimeAdapter<T>,
-        @Optional() @Inject(OWL_DATE_TIME_FORMATS)
-        private dateTimeFormats: OwlDateTimeFormats ) {
+    constructor() {
         if (!this.dateTimeAdapter) {
             throw Error(
                 `OwlDateTimePicker: No provider found for DateTimePicker. You must import one of the following ` +

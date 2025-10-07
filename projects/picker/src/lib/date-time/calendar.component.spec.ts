@@ -23,7 +23,7 @@ import { ENTER, RIGHT_ARROW } from '@angular/cdk/keycodes';
 import { OwlMonthViewComponent } from './calendar-month-view.component';
 import { OwlYearViewComponent } from './calendar-year-view.component';
 import { OwlMultiYearViewComponent } from './calendar-multi-year-view.component';
-import {DateView} from './date-time.class';
+import { DateView, SelectMode } from './date-time.class';
 
 export const JAN = 0,
     FEB = 1,
@@ -43,18 +43,15 @@ describe('OwlCalendarComponent', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [OwlNativeDateTimeModule, OwlDateTimeModule],
-            declarations: [
-                StandardCalendarComponent,
-                CalendarWithCalendarWeeks,
-                CalendarWithMinMaxComponent,
-                CalendarWithDateFilterComponent
-            ],
-            providers: [
-                OwlDateTimeIntl,
-                { provide: NgZone, useFactory: () => (zone = new MockNgZone()) }
-            ]
-        }).compileComponents();
+    imports: [OwlNativeDateTimeModule, OwlDateTimeModule, StandardCalendarComponent,
+        CalendarWithCalendarWeeks,
+        CalendarWithMinMaxComponent,
+        CalendarWithDateFilterComponent],
+    providers: [
+        OwlDateTimeIntl,
+        { provide: NgZone, useFactory: () => (zone = new MockNgZone()) }
+    ]
+}).compileComponents();
     });
 
     describe('standard calendar', () => {
@@ -524,7 +521,6 @@ describe('OwlCalendarComponent', () => {
 });
 
 @Component({
-    standalone: false,
     template: `
         <owl-date-time-calendar
                 [(selected)]="selected"
@@ -532,10 +528,11 @@ describe('OwlCalendarComponent', () => {
                 [pickerMoment]="pickerMoment"
                 (monthSelected)="selectedMonth=$event"
                 (yearSelected)="selectedYear=$event"></owl-date-time-calendar>
-    `
+    `,
+    imports: [OwlNativeDateTimeModule, OwlDateTimeModule]
 })
 class StandardCalendarComponent {
-    selectMode = 'single';
+    selectMode:SelectMode = 'single';
     selected: Date;
     selectedYear: Date;
     selectedMonth: Date;
@@ -543,16 +540,16 @@ class StandardCalendarComponent {
 }
 
 @Component({
-    standalone: false,
     template: `
         <owl-date-time-calendar [selectMode]="selectMode"
                                 [pickerMoment]="pickerMoment"
                                 [minDate]="minDate"
                                 [maxDate]="maxDate"></owl-date-time-calendar>
-    `
+    `,
+    imports: [OwlNativeDateTimeModule, OwlDateTimeModule]
 })
 class CalendarWithMinMaxComponent {
-    selectMode = 'single';
+    selectMode:SelectMode = 'single';
     startAt: Date;
     minDate = new Date(2016, JAN, 1);
     maxDate = new Date(2019, JAN, 1);
@@ -560,31 +557,31 @@ class CalendarWithMinMaxComponent {
 }
 
 @Component({
-    standalone: false,
     template: `
         <owl-date-time-calendar [selectMode]="selectMode"
                                 [pickerMoment]="pickerMoment"
                                 [showCalendarWeeks]="showCalendarWeeks"></owl-date-time-calendar>
-    `
+    `,
+    imports: [OwlNativeDateTimeModule, OwlDateTimeModule]
 })
 class CalendarWithCalendarWeeks {
-    selectMode = 'single';
+    selectMode:SelectMode = 'single';
     startAt: Date;
     showCalendarWeeks = false;
     pickerMoment = new Date(2018, JAN, 31);
 }
 
 @Component({
-    standalone: false,
     template: `
         <owl-date-time-calendar [(selected)]="selected"
                                 [selectMode]="selectMode"
                                 [pickerMoment]="pickerMoment"
                                 [dateFilter]="dateFilter"></owl-date-time-calendar>
-    `
+    `,
+    imports: [OwlNativeDateTimeModule, OwlDateTimeModule]
 })
 class CalendarWithDateFilterComponent {
-    selectMode = 'single';
+    selectMode:SelectMode = 'single';
     selected: Date;
     pickerMoment = new Date(2018, JAN, 31);
 

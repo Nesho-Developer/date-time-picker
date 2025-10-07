@@ -2,20 +2,7 @@
  * calendar-month-view.component
  */
 
-import {
-    AfterContentInit,
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    EventEmitter,
-    Inject,
-    Input,
-    OnDestroy,
-    OnInit,
-    Optional,
-    Output,
-    ViewChild
-} from '@angular/core';
+import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, inject } from '@angular/core';
 import {
     CalendarCell,
     OwlCalendarBodyComponent
@@ -38,7 +25,7 @@ import {
     RIGHT_ARROW,
     UP_ARROW
 } from '@angular/cdk/keycodes';
-import { getLocaleFirstDayOfWeek } from '@angular/common';
+import { getLocaleFirstDayOfWeek, NgClass } from '@angular/common';
 
 const DAYS_PER_WEEK = 7;
 const WEEKS_PER_VIEW = 6;
@@ -48,15 +35,19 @@ const WEEKS_PER_VIEW = 6;
     exportAs: 'owlYearView',
     templateUrl: './calendar-month-view.component.html',
     styleUrls: ['./calendar-month-view.component.scss'],
-    standalone: false,
     host: {
         '[class.owl-dt-calendar-view]': 'owlDTCalendarView'
     },
     preserveWhitespaces: false,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [NgClass, OwlCalendarBodyComponent]
 })
 export class OwlMonthViewComponent<T>
     implements OnInit, AfterContentInit, OnDestroy {
+    private cdRef = inject(ChangeDetectorRef);
+    private dateTimeAdapter = inject<DateTimeAdapter<T>>(DateTimeAdapter, { optional: true })!;
+    private dateTimeFormats = inject<OwlDateTimeFormats>(OWL_DATE_TIME_FORMATS, { optional: true })!;
+
     /**
      * Whether to hide dates in other months at the start or end of the current month.
      * */
@@ -301,14 +292,6 @@ export class OwlMonthViewComponent<T>
     get owlDTCalendarView(): boolean {
         return true;
     }
-
-    constructor(
-        private cdRef: ChangeDetectorRef,
-        @Optional() private dateTimeAdapter: DateTimeAdapter<T>,
-        @Optional()
-        @Inject(OWL_DATE_TIME_FORMATS)
-        private dateTimeFormats: OwlDateTimeFormats
-    ) {}
 
     public ngOnInit() {
         this.updateFirstDayOfWeek(this.dateTimeAdapter.getLocale());

@@ -52,13 +52,12 @@ describe('OwlTimerComponent', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [OwlNativeDateTimeModule, OwlDateTimeModule],
-            declarations: [StandardTimerComponent],
-            providers: [
-                OwlDateTimeIntl,
-                { provide: NgZone, useFactory: () => (zone = new MockNgZone()) }
-            ]
-        }).compileComponents();
+    imports: [OwlNativeDateTimeModule, OwlDateTimeModule, StandardTimerComponent],
+    providers: [
+        OwlDateTimeIntl,
+        { provide: NgZone, useFactory: () => (zone = new MockNgZone()) }
+    ]
+}).compileComponents();
     });
 
     describe('standard timer', () => {
@@ -369,7 +368,6 @@ describe('OwlTimerComponent', () => {
 });
 
 @Component({
-    standalone: false,
     template: `
         <owl-date-time-timer
                 [hour12Timer]="hour12Timer"
@@ -381,7 +379,8 @@ describe('OwlTimerComponent', () => {
                 [minDateTime]="minDateTime"
                 [maxDateTime]="maxDateTime"
                 (selectedChange)="handleSelectedChange($event)"></owl-date-time-timer>
-    `
+    `,
+    imports: [OwlNativeDateTimeModule, OwlDateTimeModule]
 })
 class StandardTimerComponent {
     stepHour = 1;

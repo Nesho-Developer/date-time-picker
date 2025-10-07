@@ -2,43 +2,39 @@
  * calendar.component
  */
 
-import {
-    AfterContentInit,
-    AfterViewChecked,
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    ElementRef,
-    EventEmitter,
-    Inject,
-    Input,
-    NgZone,
-    OnDestroy,
-    OnInit,
-    Optional,
-    Output
-} from '@angular/core';
+import { AfterContentInit, AfterViewChecked, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, NgZone, OnDestroy, OnInit, Output, inject } from '@angular/core';
 import {OwlDateTimeIntl} from './date-time-picker-intl.service';
 import {DateTimeAdapter} from './adapter/date-time-adapter.class';
 import {OWL_DATE_TIME_FORMATS, OwlDateTimeFormats} from './adapter/date-time-format.class';
 import {DateView, DateViewType, SelectMode} from './date-time.class';
 import {take} from 'rxjs/operators';
 import {Subscription} from 'rxjs';
+import { CdkMonitorFocus } from '@angular/cdk/a11y';
+import { OwlMonthViewComponent } from './calendar-month-view.component';
+import { OwlYearViewComponent } from './calendar-year-view.component';
+import { OwlMultiYearViewComponent } from './calendar-multi-year-view.component';
 
 @Component({
     selector: 'owl-date-time-calendar',
     exportAs: 'owlDateTimeCalendar',
     templateUrl: './calendar.component.html',
     styleUrls: ['./calendar.component.scss'],
-    standalone: false,
     host: {
         '[class.owl-dt-calendar]': 'owlDTCalendarClass'
     },
     preserveWhitespaces: false,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CdkMonitorFocus, OwlMonthViewComponent, OwlYearViewComponent, OwlMultiYearViewComponent]
 })
 export class OwlCalendarComponent<T>
     implements OnInit, AfterContentInit, AfterViewChecked, OnDestroy {
+    private elmRef = inject(ElementRef);
+    private pickerIntl = inject(OwlDateTimeIntl);
+    private ngZone = inject(NgZone);
+    private cdRef = inject(ChangeDetectorRef);
+    private dateTimeAdapter = inject<DateTimeAdapter<T>>(DateTimeAdapter, { optional: true })!;
+    private dateTimeFormats = inject<OwlDateTimeFormats>(OWL_DATE_TIME_FORMATS, { optional: true })!;
+
 
     DateView = DateView;
 
@@ -182,16 +178,7 @@ export class OwlCalendarComponent<T>
         return true;
     }
 
-    constructor(
-        private elmRef: ElementRef,
-        private pickerIntl: OwlDateTimeIntl,
-        private ngZone: NgZone,
-        private cdRef: ChangeDetectorRef,
-        @Optional() private dateTimeAdapter: DateTimeAdapter<T>,
-        @Optional()
-        @Inject(OWL_DATE_TIME_FORMATS)
-        private dateTimeFormats: OwlDateTimeFormats
-    ) {
+    constructor() {
         this.intlChangesSub = this.pickerIntl.changes.subscribe(() => {
             this.cdRef.markForCheck();
         });

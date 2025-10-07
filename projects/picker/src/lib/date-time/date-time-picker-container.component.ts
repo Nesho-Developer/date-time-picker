@@ -2,17 +2,7 @@
  * date-time-picker-container.component
  */
 
-import {
-    AfterContentInit,
-    AfterViewInit,
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    ElementRef,
-    OnInit,
-    Optional,
-    ViewChild,
-} from '@angular/core';
+import { AfterContentInit, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import { AnimationEvent } from '@angular/animations';
 import { OwlDateTimeIntl } from './date-time-picker-intl.service';
 import { OwlCalendarComponent } from './calendar.component';
@@ -28,6 +18,8 @@ import {
     SPACE,
     UP_ARROW,
 } from '@angular/cdk/keycodes';
+import { CdkTrapFocus } from '@angular/cdk/a11y';
+import { NgClass } from '@angular/common';
 
 @Component({
     exportAs: 'owlDateTimeContainer',
@@ -36,7 +28,6 @@ import {
     styleUrls: ['./date-time-picker-container.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     preserveWhitespaces: false,
-    standalone: false,
     animations: [
         owlDateTimePickerAnimations.transformPicker,
         owlDateTimePickerAnimations.fadeInPicker,
@@ -52,10 +43,21 @@ import {
         '[attr.id]': 'owlDTContainerId',
         '[@transformPicker]': 'owlDTContainerAnimation',
     },
+    imports: [
+        CdkTrapFocus,
+        OwlCalendarComponent,
+        OwlTimerComponent,
+        NgClass,
+    ],
 })
 export class OwlDateTimeContainerComponent<T>
     implements OnInit, AfterContentInit, AfterViewInit
 {
+    private cdRef = inject(ChangeDetectorRef);
+    private elmRef = inject(ElementRef);
+    private pickerIntl = inject(OwlDateTimeIntl);
+    private dateTimeAdapter = inject<DateTimeAdapter<T>>(DateTimeAdapter, { optional: true })!;
+
     @ViewChild(OwlCalendarComponent)
     calendar: OwlCalendarComponent<T>;
     @ViewChild(OwlTimerComponent)
@@ -209,13 +211,6 @@ export class OwlDateTimeContainerComponent<T>
     get owlDTContainerAnimation(): any {
         return this.picker.pickerMode === 'inline' ? '' : 'enter';
     }
-
-    constructor(
-        private cdRef: ChangeDetectorRef,
-        private elmRef: ElementRef,
-        private pickerIntl: OwlDateTimeIntl,
-        @Optional() private dateTimeAdapter: DateTimeAdapter<T>,
-    ) {}
 
     public ngOnInit() {
         if (this.picker.selectMode === 'range') {

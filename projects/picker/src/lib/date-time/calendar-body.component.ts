@@ -2,18 +2,10 @@
  * calendar-body.component
  */
 
-import {
-    ChangeDetectionStrategy,
-    Component,
-    ElementRef,
-    EventEmitter,
-    Input,
-    NgZone,
-    OnInit,
-    Output
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, NgZone, OnInit, Output, inject } from '@angular/core';
 import { SelectMode } from './date-time.class';
 import { take } from 'rxjs/operators';
+import { NgClass } from '@angular/common';
 
 export class CalendarCell {
     constructor(
@@ -35,10 +27,13 @@ export class CalendarCell {
         '[class.owl-dt-calendar-body]': 'owlDTCalendarBodyClass'
     },
     preserveWhitespaces: false,
-    standalone: false,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [NgClass]
 })
 export class OwlCalendarBodyComponent implements OnInit {
+    private elmRef = inject(ElementRef);
+    private ngZone = inject(NgZone);
+
     /**
      * The cell number of the active cell in the table.
      */
@@ -102,8 +97,6 @@ export class OwlCalendarBodyComponent implements OnInit {
             this.selectMode === 'rangeTo'
         );
     }
-
-    constructor(private elmRef: ElementRef, private ngZone: NgZone) {}
 
     public ngOnInit() {}
 
